@@ -1,15 +1,27 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
-
+import { auth,provider } from '../Firebase.js/Firebase';
+import {useAuthState} from 'react-firebase-hooks/auth';
 const Navbar=()=>{
+
+    const SignhimIn =()=>{
+        auth.signInWithRedirect(provider);
+    }
+    const SignhimOut =()=>{
+        auth.signOut();
+    }
+
+    const [user]=useAuthState(auth);
+
     return(
          <nav className="blue">
          <div className="container">
              <a className="brand-logo">ToDo</a> 
              <ul className="right">
-                  <li><Link to ='/login'>LOGIN</Link></li>
-                  <li><Link to ='/signin'>SIGIN</Link></li>
-
+                {user ? (
+                    <>
+                    <button onClick={SignhimOut}>SIGN OUT</button>
+                    </>
+                ) : (<button onClick={SignhimIn}>SIGN IN</button>)}
              </ul>
          </div>
          </nav>

@@ -1,18 +1,19 @@
-import React,{ Component } from 'react';
+import React,{ Component ,useState ,useEffect} from 'react';
 import ToDolist from './ToDolist';
-import AddTodo from './Addtodo';
+import { FireStore } from './Firebase.js/Firebase';
+import firebase from 'firebase';
 
-var num=2;
-class  Profile
- extends Component {
-  state = { 
-    toDo:[
-        { id:1, list:"Lets Start" },
-    ]
+const  Profile =()=> {
+  const [input,setinput]=useState('');
+
+  useEffect(() => {
+    getTodo();
+  }, [])
+
+  const getTodo=()=>{
+     FireStore.collection("todos")
   }
-
-
-  deleteTodo =(id)=>{
+  const deleteTodo =(id)=>{
     const toDo = this.state.toDo.filter(todo =>{
       return(
         todo.id !== id
@@ -22,23 +23,33 @@ class  Profile
       toDo
     })
   }
-  toAdd = (todo) =>{
-    todo.id=num++;
-    let toDo=[...this.state.toDo,todo];
-    this.setState(
-      {toDo}
-    )
-  }
-  render (){
-    return(
-        <div className ="Profile">
-           <h1 className="center blue-text">ToDO LIST</h1>
-           <ToDolist toDo={this.state.toDo} deleteTodo={this.deleteTodo} />
-           <AddTodo toAdd={this.toAdd}/>
-        </div>    
-    )
-  };
+
+  const ifChanged = (e) => {
+    this.setState({
+        input: e.target.value
+    })
 }
 
+const onClick =(e)=>{
+  e.preventDefault();
+  console.log("it works")
+  FireStore.collection("todos").add({
+    timestamp:firebase.firestore.FieldValue.serverTimestamp(),
+    todo:input
+  })
+}
+
+  return(
+      <div className ="Profile">
+        <h1 className="center blue-text">ToDO LIST</h1>
+        <form onSubmit={onClick} >
+          <label>ADD FROM HERE</label>
+          <input value={input} onChange={(e)=>setinput(e.target.value)} />
+        </form>
+      </div>    
+  )
+};
+
+//<ToDolist toDo={this.state.toDo} deleteTodo={this.deleteTodo} />
 export default Profile
 ;
